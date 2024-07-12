@@ -3,6 +3,7 @@ FROM debian:bullseye
 RUN apt update -y && apt upgrade -y && apt install -y wget
 
 RUN apt install -y \
+php7.4 \
 php-fpm \
 php-mysql \
 mariadb-client
@@ -18,10 +19,9 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 
-COPY conf/auto_config.sh /
-RUN chmod +x /auto_config.sh
+COPY tools/script.sh /
+RUN chmod 755 /script.sh
 
-RUN wp core install
-RUN /usr/sbin/php-fpm7.3 -F
+ENTRYPOINT ["bash", "/script.sh"]
 
-ENTRYPOINT ["sh", "-c", "/etc/init.d/php7.4-fpm start && bash /auto_config.sh"]
+CMD ["/usr/sbin/php-fpm7.4", "-F"]
