@@ -1,15 +1,31 @@
-all: build
+NAME = inception
+COMPOSE = srcs/docker-compose.yml
+DC =  docker compose -p $(NAME) -f $(COMPOSE)
+
+all: build up
 
 build:
-	sudo docker compose -f srcs/docker-compose.yml up -d
-	sudo docker compose -f srcs/docker-compose.yml start
+	@sudo mkdir -p /home/gmarre/data/mariadb
+	@sudo mkdir -p /home/gmarre/data/wordpress
+	@$(DC) build
+
+up:
+	@$(DC) up -d
+
+down:
+	@$(DC) down
+
+re: clean all
+
+clean: down
+	@sudo rm -rf /home/gmarre/data/mariadb
+	@sudo rm -rf /home/gmarre/data/wordpress
+	@sudo docker volume rm inception_wordpress
+	@sudo docker volume rm inception_mariadb
+	@sudo docker rmi $$(docker images -a -q) -f
+	@sudo docker system prune -f -a --volumes
 
 stop:
-	sudo docker compose -f srcs/docker-compose.yml stop
+	@$(DC) stop
 
-clean:
-	sudo docker compose -f srcs/docker-compose.yml down
-
-fclean: clean
-	sudo -rm -rf /home/gmarre/data/*/*
-	docker compose system prune -af
+.PHONY: all build up down re clean stop
