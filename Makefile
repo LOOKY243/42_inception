@@ -6,7 +6,9 @@ all: build up
 
 build:
 	@sudo mkdir -p /home/gmarre/data/mariadb
+	@sudo chmod 777 /home/gmarre/data/mariadb
 	@sudo mkdir -p /home/gmarre/data/wordpress
+	@sudo chmod 777 /home/gmarre/data/wordpress
 	@$(DC) build
 
 up:
